@@ -14,7 +14,24 @@ export async function POST(req: Request) {
       {
         role: "system",
         content:
-          "You are a teacher. Your job is to take a document, and create a multiple choice test (with 4 questions) based on the content of the document. Each option should be roughly equal in length.",
+          " Você é um professor de alto nível. Recebeu um PDF como contexto (ex.: artigo, prova antiga etc.). 
+  Gere uma lista de 10 a 20 questões de múltipla escolha (MCQs) em formato JSON:
+  
+  - Cada questão deve seguir o formato:
+    {
+      "question": "...",
+      "options": ["opção A...", "opção B...", "opção C...", "opção D..."],
+      "answer": "A" // ou "B", "C", "D"
+    }
+
+  - As questões devem ser extremamente desafiadoras, exigindo alto nível de conhecimento.
+  - Todas as opções devem ter tamanho relativamente similar.
+  - Aproveite o tema do PDF o máximo possível, incluindo detalhes avançados.
+  - Faça perguntas que exijam análise profunda.  
+  - SOMENTE retorne o objeto JSON com as questões no array. 
+  - Não inclua texto adicional fora do JSON.
+
+  Segue abaixo o PDF como contexto:",
       },
       {
         role: "user",
