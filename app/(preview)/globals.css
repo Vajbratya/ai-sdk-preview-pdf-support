@@ -4,53 +4,87 @@
 
 @layer base {
     :root {
-        --background: 0 0% 100%;
-        --foreground: 240 10% 3.9%;
-        --card: 0 0% 100%;
-        --card-foreground: 240 10% 3.9%;
-        --popover: 0 0% 100%;
-        --popover-foreground: 240 10% 3.9%;
-        --primary: 240 5.9% 10%;
-        --primary-foreground: 0 0% 98%;
-        --secondary: 240 4.8% 95.9%;
-        --secondary-foreground: 240 5.9% 10%;
-        --muted: 240 4.8% 95.9%;
-        --muted-foreground: 240 3.8% 46.1%;
-        --accent: 240 4.8% 95.9%;
-        --accent-foreground: 240 5.9% 10%;
-        --destructive: 0 84.2% 60.2%;
+        /* Lighter background for potential fallback (still darkish). */
+        --background: 228 7% 14%;
+        /* A slightly softer white for text. */
+        --foreground: 210 10% 96%;
+
+        /* Card & popover background: darker, but with a small hue shift for subtle variety. */
+        --card: 228 6% 13%;
+        --card-foreground: 210 10% 96%;
+
+        --popover: 228 6% 13%;
+        --popover-foreground: 210 10% 96%;
+
+        /* Primary color: a calm, faint bluish. */
+        --primary: 225 6% 42%;
+        --primary-foreground: 210 10% 96%;
+
+        /* Secondary color: subdued, near gray. */
+        --secondary: 220 4% 28%;
+        --secondary-foreground: 210 9% 95%;
+
+        /* Muted color: a subtle darker gray, text also calmer. */
+        --muted: 220 4% 23%;
+        --muted-foreground: 210 8% 80%;
+
+        /* Accent color: use the same as secondary to keep minimal. */
+        --accent: 220 4% 28%;
+        --accent-foreground: 210 10% 96%;
+
+        /* Destructive color: keep a subtle red tone. */
+        --destructive: 0 52% 42%;
         --destructive-foreground: 0 0% 98%;
-        --border: 240 5.9% 90%;
-        --input: 240 5.9% 90%;
-        --ring: 240 10% 3.9%;
-        --chart-1: 12 76% 61%;
-        --chart-2: 173 58% 39%;
-        --chart-3: 197 37% 24%;
-        --chart-4: 43 74% 66%;
-        --chart-5: 27 87% 67%;
-        --radius: 0.5rem;
+
+        /* Border & input: dark tone with slightly visible contrast. */
+        --border: 210 6% 22%;
+        --input: 210 6% 22%;
+
+        /* Ring color: subtle hint of foreground. */
+        --ring: 210 10% 50%;
+
+        /* Example chart colors (just refined a bit). */
+        --chart-1: 180 70% 40%;
+        --chart-2: 220 70% 40%;
+        --chart-3: 30 70% 55%;
+        --chart-4: 340 65% 60%;
+        --chart-5: 350 75% 50%;
+
+        /* Adjusted border radius slightly for a sleeker effect. */
+        --radius: 0.4rem;
     }
     .dark {
-        --background: 240 10% 3.9%;
-        --foreground: 0 0% 98%;
-        --card: 240 10% 3.9%;
-        --card-foreground: 0 0% 98%;
-        --popover: 240 10% 3.9%;
-        --popover-foreground: 0 0% 98%;
-        --primary: 0 0% 98%;
-        --primary-foreground: 240 5.9% 10%;
-        --secondary: 240 3.7% 15.9%;
-        --secondary-foreground: 0 0% 98%;
-        --muted: 240 3.7% 15.9%;
-        --muted-foreground: 240 5% 64.9%;
-        --accent: 240 3.7% 15.9%;
-        --accent-foreground: 0 0% 98%;
+        /* Maintaining a truly dark environment. */
+        --background: 228 6% 11%;
+        --foreground: 210 10% 96%;
+
+        --card: 228 6% 11%;
+        --card-foreground: 210 10% 96%;
+
+        --popover: 228 6% 11%;
+        --popover-foreground: 210 10% 96%;
+
+        --primary: 225 6% 42%;
+        --primary-foreground: 210 10% 96%;
+
+        --secondary: 220 4% 25%;
+        --secondary-foreground: 210 9% 90%;
+
+        --muted: 220 4% 20%;
+        --muted-foreground: 210 6% 68%;
+
+        --accent: 220 4% 25%;
+        --accent-foreground: 210 10% 96%;
+
         --destructive: 0 62.8% 30.6%;
         --destructive-foreground: 0 0% 98%;
-        --border: 240 3.7% 15.9%;
-        --input: 240 3.7% 15.9%;
-        --ring: 240 4.9% 83.9%;
-        --chart-1: 220 70% 50%;
+
+        --border: 210 4% 18%;
+        --input: 210 4% 18%;
+
+        --ring: 210 10% 50%;
+
+        --chart-1: 220 70% 40%;
         --chart-2: 160 60% 45%;
         --chart-3: 30 80% 55%;
         --chart-4: 280 65% 60%;
