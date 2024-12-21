@@ -1,8 +1,4 @@
-Please implement [task]. If you change a file, write out the file in full so I can paste it into prod. Do not remove existing logic or comments — eles estão lá para nossa equipe.
 
-================================================================================
-/app/(preview)/page.tsx
-================================================================================
 
 "use client";
 
