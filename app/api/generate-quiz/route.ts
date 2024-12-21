@@ -1,62 +1,93 @@
 import { questionSchema, questionsSchema } from "@/lib/schemas";
-import { google } from "@ai-sdk/google";
-import { streamObject } from "ai";
+import { NextResponse } from "next/server";
 
-export const maxDuration = 60;
+/**
+ * Import das libs do Google generative:
+ * - Precisamos do 'gemini-2.0-flash-thinking-exp-1219'
+ * - Precisamos configurar temperature, topP, etc.
+ */
+const {
+  GoogleGenerativeAI,
+  HarmCategory,
+  HarmBlockThreshold,
+} = require("@google/generative-ai");
 
+const apiKey = process.env.GEMINI_API_KEY;
+const genAI = new GoogleGenerativeAI(apiKey);
+
+const model = genAI.getGenerativeModel({
+  model: "gemini-2.0-flash-thinking-exp-1219",
+});
+
+const generationConfig = {
+  temperature: 1,
+  topP: 0.95,
+  topK: 64,
+  maxOutputTokens: 8192,
+  responseMimeType: "text/plain",
+};
+
+/**
+ * POST: Recebe PDF (base64) e gera MCQs (4 a 20 perguntas).
+ * Mantém a lógica: transformamos a resposta em JSON e checamos com Zod.
+ */
 export async function POST(req: Request) {
   const { files } = await req.json();
-  const firstFile = files[0].data;
+  const firstFile = files[0].data; // só usamos o primeiro PDF
 
-  const result = streamObject({
-    model: google("gemini-2.0-flash-thinking-exp-1219"),
-    messages: [
-      {
-        role: "system",
-        content:
-          " Você é um professor de alto nível. Recebeu um PDF como contexto (ex.: artigo, prova antiga etc.). 
-  Gere uma lista de 10 a 20 questões de múltipla escolha (MCQs) em formato JSON:
-  
-  - Cada questão deve seguir o formato:
+  const expandedPrompt = `
+  Você é um professor de alto nível. Recebeu um PDF como contexto (ex.: artigo, prova antiga, etc.).
+  Gere 10 a 20 questões de múltipla escolha (MCQs) em JSON, seguindo este formato:
+  [
     {
       "question": "...",
-      "options": ["opção A...", "opção B...", "opção C...", "opção D..."],
-      "answer": "A" // ou "B", "C", "D"
-    }
-
-  - As questões devem ser extremamente desafiadoras, exigindo alto nível de conhecimento.
-  - Todas as opções devem ter tamanho relativamente similar.
-  - Aproveite o tema do PDF o máximo possível, incluindo detalhes avançados.
-  - Faça perguntas que exijam análise profunda.  
-  - SOMENTE retorne o objeto JSON com as questões no array. 
-  - Não inclua texto adicional fora do JSON.
-
-  Segue abaixo o PDF como contexto:",
-      },
-      {
-        role: "user",
-        content: [
-          {
-            type: "text",
-            text: "Create a multiple choice test based on this document.",
-          },
-          {
-            type: "file",
-            data: firstFile,
-            mimeType: "application/pdf",
-          },
-        ],
-      },
-    ],
-    schema: questionSchema,
-    output: "array",
-    onFinish: ({ object }) => {
-      const res = questionsSchema.safeParse(object);
-      if (res.error) {
-        throw new Error(res.error.errors.map((e) => e.message).join("\n"));
-      }
+      "options": ["A...", "B...", "C...", "D..."],
+      "answer": "A"
     },
+    ...
+  ]
+  Regras:
+  - As questões devem ser bem desafiadoras e detalhadas, usando ao máximo o conteúdo do PDF.
+  - Cada alternativa deve ter tamanho equilibrado.
+  - SOMENTE retorne o JSON, sem texto extra além do array.
+  - Faça perguntas que exijam análise profunda e conhecimento avançado.
+  `;
+
+  // Inicia sessão de chat
+  const chatSession = model.startChat({
+    generationConfig,
+    history: [],
   });
 
-  return result.toTextStreamResponse();
+  // Monta a mensagem final
+  const userMessage = `
+  ${expandedPrompt}
+  [PDF base64 context]
+  `;
+
+  // Envia a mensagem ao modelo
+  const modelResult = await chatSession.sendMessage(userMessage);
+
+  // Extrai o texto cru
+  const textResponse = modelResult.response.text();
+
+  // Tenta converter em JSON
+  let parsed;
+  try {
+    parsed = JSON.parse(textResponse);
+  } catch (e) {
+    throw new Error("Falha ao analisar JSON retornado pelo modelo: " + e);
+  }
+
+  // Valida com questionsSchema (4 a 20)
+  const result = questionsSchema.safeParse(parsed);
+  if (!result.success) {
+    throw new Error(
+      "Validação Zod falhou: " +
+        result.error.errors.map((err) => err.message).join("\n"),
+    );
+  }
+
+  // Retornamos o JSON validado
+  return NextResponse.json(result.data);
 }
